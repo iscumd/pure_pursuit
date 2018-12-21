@@ -1,0 +1,40 @@
+Test each function to ensure it works correctly...
+Also be sure to test edge cases, look for bugs...
+
+get_location_on_path:
+	Path p = {{0,0,0}, {10,0,10}};
+	auto location = get_location_on_path({5,5,0});
+	/*
+	  location.first should be {5,0,5}
+	  location.second should be 5
+	 */
+
+get_point_on_path:
+	Path path = {{0,0,0},{10,0,10},{20,0,10}};
+	auto point = get_point_on_path(15);
+	/* 
+	point.x should be 15
+	point.y should be 0
+	point.z should be 10
+	*/
+
+get_ongoing_path_segment:
+	Path path = {{0,0,0},{10,0,10},{20,0,10}};
+	auto segment = get_ongoing_path_segment(0)
+	segment.first should be {10,0,10}
+	segment.second should be {20,0,10}
+
+get_lookahead_point:
+	Path path= {{0,0,0},{10,0,10},{20,0,10}};
+	Point3D state(
+
+Integration test:
+
+
+
+void callbackfunc(poseData)
+	linear, angular = get_target_state(poseData)
+	publish(linear,angular)
+
+ros subscribe to /turtle1/pose and call callbackfunc
+
