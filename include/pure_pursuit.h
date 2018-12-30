@@ -1,6 +1,6 @@
 #include <vector>
 #include <cmath>
-
+//
 struct Point2D{
 	double x,y;
 };
