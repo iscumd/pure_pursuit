@@ -77,7 +77,6 @@ for dir in "$@"; do
          -o -name '*.cc' \
          -o -name '*.cpp' \
          -o -name '*.h' \
-         -o -name '*.hh' \
          -o -name '*.hpp' \) \
          -exec "${FMT}" -i '{}' \;
     popd &>/dev/null

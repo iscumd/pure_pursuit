@@ -3,4 +3,4 @@
 // DO NOT #define CATCH_CONFIG_MAIN anywhere else
 
 #define CATCH_CONFIG_MAIN
-#include "../external/catch/catch.hpp"
+#include "external/catch/catch.hh"
