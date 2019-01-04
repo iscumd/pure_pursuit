@@ -1,0 +1,15 @@
+dist: trusty
+sudo: false
+language: cpp
+
+addons:
+  apt:
+    sources:
+     - ubuntu-toolchain-r-test
+    packages:
+     - cppcheck
+script:
+ - ./scripts/build.sh
+ - ./scripts/cppcheck-all.sh
+ - ./scripts/run_tests.sh
+
