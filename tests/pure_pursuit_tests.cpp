@@ -51,10 +51,10 @@ TEST_CASE( "Test get location on path", "[path_location]" )
         PurePursuitTest test_class( p, 5 );
 
         auto location = test_class.get_location_on_path_test( { 5, 5 } );
-        REQUIRE( location.first == Point2D( 5, 0 ) );
+        CHECK( location.first == Point2D( 5, 0 ) );
 
         location = test_class.get_location_on_path_test( { 3, 3 } );
-        REQUIRE( location.first == Point2D( { 3, 0 } ) );
+        CHECK( location.first == Point2D( { 3, 0 } ) );
     }
 
     SECTION( "Edge Case" )
@@ -62,6 +62,6 @@ TEST_CASE( "Test get location on path", "[path_location]" )
         Path p = { { 0, 0, 0 }, { 10, 0, 10 } };
         PurePursuitTest test_class( p, 5 );
         auto location = test_class.get_location_on_path_test( { 11, 0 } );
-        REQUIRE( location.first == Point2D( 10, 0 ) );
+        CHECK( location.first == Point2D( 10, 0 ) );
     }
 }
