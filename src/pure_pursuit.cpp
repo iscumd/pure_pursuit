@@ -1,1 +1,108 @@
-// implement class here
+//implement class here
+#include "pure_pursuit.h"
+#include <cmath>
+
+//function to scale values in one range to values in another range -  proportional scaling.. this is to find z value
+double pscale(const double& x, const double& in_min, const double& in_max, const double& out_min, const double& out_max)
+{ return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min; }
+
+
+//distance formula function that finds distance between two points
+double distanceFormula(const Point3D& point1, const Point3D& point2)
+{
+    double dist = 0;
+
+    dist = std::sqrt(std::pow((point2.x - point1.x),2) + std::pow((point2.y - point1.y), 2));
+
+    return dist;
+}
+
+/**
+	* @brief Will return a target linear and angular velocity as a Point2D
+	* where x is the linear velocity and y is the angular velocity
+	*
+	* @input state a Point3D where x and y are the position of the bot and z is the orientation
+	*
+	* Should return Point3D value where x is target velocity and y is heading to lookahead point
+	*/
+Point2D PurePursuit::get_target_state(const Point3D& state)
+{
+
+}
+
+
+
+
+Point3D PurePursuit::get_point_on_path(const double& position)
+{
+    // constructor of this class initializes the path as m_robot_path (type Path (vector) )
+    //use the vector to find equation of a line and then from vect at 0
+    //this function simply returns the x,y, and z coordinate that represents the path blank position points from the beginning of the vector
+    double numerator, denominator;
+    double sum = 0; // must be initialized to the first path point bc for loop adds on the following point
+    double distance, slope = 0;
+    double zVal = 0, yVal = 0, xVal = 0;
+    Point3D newPoint;
+
+    for (int i = 0; i < (m_robot_path.size() - 1); i++) { //loop until second to last point in path
+        numerator = m_robot_path.at(i+1).y - m_robot_path.at(i).y; //i + 1 looks ahead to next point in path in order to act as point 2 in the slope formula
+        denominator = m_robot_path.at(i+1).x - m_robot_path.at(i).x; // denominator subtracts x values of two points
+
+        if (denominator != 0) //this means that line is not parallel to the y axis
+        {
+            sum += distanceFormula(m_robot_path.at(i), m_robot_path.at(i+1)); //distance formula
+            if (sum >= position) //if the distance is greater than that means the position is between i and i+1
+            {
+                distance = sum - m_robot_path.at(i+1).x;
+                distance = position - distance;
+                slope = numerator / denominator;
+
+                //in order to find x value of new point must use equation of a circle with radius of distance
+                // and center point of m_robot_path.at(i)... then the eq x = x1 + distance/ (sgrt(1 + m^2) is derived
+
+                xVal = m_robot_path.at(i).x + (distance/ std::sqrt(1 + (slope * slope)));
+                yVal = (slope * xVal) - (slope * m_robot_path.at(i).x) + m_robot_path.at(i).y;
+                //FIND Z
+                pscale(distance, 0, distanceFormula(m_robot_path.at(i), m_robot_path.at(i+1)), m_robot_path.at(i).z, m_robot_path.at(i+1).z);
+
+                break; //to break out of for loop
+            }
+            //else it does not do anything
+        }
+        else // line is parallel to y-axis
+        {
+            sum += m_robot_path.at(i+1).y;
+            if (sum >= position) //if the distance is greater than that means the position is between i and i+1
+            {
+                distance = sum - m_robot_path.at(i+1).y;
+                distance = position - distance;
+
+                xVal = m_robot_path.at(i).x; //point only moved on y axis between i and i + 1
+                yVal = distance + m_robot_path.at(i).y; //add the remaining distance to push point up
+
+                //FIND Z
+                pscale(distance, 0, distanceFormula(m_robot_path.at(i), m_robot_path.at(i+1)), m_robot_path.at(i).z, m_robot_path.at(i+1).z);
+
+                break; //to break out of for loop
+
+            }
+        }
+    }
+
+
+    newPoint.x = xVal;
+    newPoint.y = yVal;
+    newPoint.z = zVal;
+
+    return newPoint;
+}
+
+
+/** *
+    * @brief Will get the coordinates and target velocity of the lookahead point
+  */
+Point3D PurePursuit::get_lookahead_point(const Point3D &state) {
+
+
+    //USE THE LOOKAHEAD DISTANCE, FIND DISTANCE BEFORE THE CURRENT STATE THEN MOVE FORWORD ADDING DISTANCE
+}
