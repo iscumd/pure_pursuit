@@ -1,4 +1,5 @@
 #include <vector>
+#include <cmath>
 
 struct Point2D
 {
