@@ -106,3 +106,13 @@ Point3D PurePursuit::get_lookahead_point(const Point3D &state) {
 
     //USE THE LOOKAHEAD DISTANCE, FIND DISTANCE BEFORE THE CURRENT STATE THEN MOVE FORWORD ADDING DISTANCE
 }
+
+PurePursuit::PurePursuit(const Path &robot_path, const double &lookahead_distance) {}
+
+void PurePursuit::reset_path(const Path &robot_path) {}
+
+void PurePursuit::reset_lookahead_distance(const double &lookahead_distance) {}
+
+std::pair<Point2D, Point2D> PurePursuit::get_ongoing_path_segment(const int &current_segment) {}
+
+std::pair<Point2D, double> PurePursuit::get_location_on_path(const Point2D &state) {}
