@@ -54,7 +54,7 @@ TEST_CASE( "Test get location on path", "[path_location]" )
         REQUIRE( location.first == Point2D( 5, 0 ) );
 
         location = test_class.get_location_on_path_test( { 3, 3 } );
-        REQUIRE( location.first == Point2D( { 3, 0 } ) );
+        REQUIRE( location.first == Point2D(  3, 0  ) );
     }
 
     SECTION( "Edge Case" )
