@@ -8,6 +8,7 @@ struct Point2D
         , y( iy )
     {
     }
+    Point2D() {}
 };
 
 bool operator==( const Point2D& lhs, const Point2D& rhs )
@@ -24,6 +25,7 @@ struct Point3D
         , z( iz )
     {
     }
+    Point3D() {}
 };
 
 bool operator==( const Point3D& lhs, const Point3D& rhs )
@@ -88,6 +90,15 @@ protected:
      * Search for the shortest distance from the robot to each path segment
     */
     std::pair<Point2D, double> get_location_on_path( const Point2D& state );
+
+    /**
+     * @brief will find length of robot path
+     * uses distance formula
+     *
+     */
+    double path_length();
+
+    double get_distance_to_point( const Point3D& currPoint );
 
     double m_lookahead_distance;
     Path m_robot_path;
