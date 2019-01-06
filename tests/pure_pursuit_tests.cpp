@@ -106,10 +106,10 @@ TEST_CASE("Test get point on path", "[point_path]")
 
     SECTION("Parallel to y axis")
     {
-        Point3D exp = { 3, 5.594449, 10.8916735 };
+        Point3D exp = { 3, 5.694449, 11.04167 };
         Path p = { { 1, 2, 0 } , { 3, 5, 10 } , { 3, 7, 13 } , { 4, 9, 15 } };
         PurePursuitTest test_class( p, 5);
-        auto point = test_class.get_point_on_path_test( 43 );
+        auto point = test_class.get_point_on_path_test( 4.3 );
         REQUIRE( approximately_equals( exp, point ) );
 
     }
