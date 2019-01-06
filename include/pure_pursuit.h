@@ -8,7 +8,7 @@ struct Point2D
         , y( iy )
     {
     }
-    Point2D(){}
+    Point2D() {}
 };
 
 bool operator==( const Point2D& lhs, const Point2D& rhs )
@@ -25,7 +25,7 @@ struct Point3D
         , z( iz )
     {
     }
-    Point3D(){}
+    Point3D() {}
 };
 
 bool operator==( const Point3D& lhs, const Point3D& rhs )
@@ -98,7 +98,7 @@ protected:
      */
     double path_length();
 
-    double get_distance_to_point(const Point3D& currPoint );
+    double get_distance_to_point( const Point3D& currPoint );
 
     double m_lookahead_distance;
     Path m_robot_path;

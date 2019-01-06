@@ -1,10 +1,11 @@
 #include "pure_pursuit.h"
 #include "catch.hh"
 
-bool approximately_equals(Point3D expected, Point3D actual)
+bool approximately_equals( Point3D expected, Point3D actual )
 {
-    return ( actual.x == Approx(expected.x).margin(1e-3) ) && ( actual.y == Approx(expected.y).margin(1e-3) ) && ( actual.z == Approx(expected.z).margin(1e-3) ) ;
-
+    return ( actual.x == Approx( expected.x ).margin( 1e-3 ) )
+        && ( actual.y == Approx( expected.y ).margin( 1e-3 ) )
+        && ( actual.z == Approx( expected.z ).margin( 1e-3 ) );
 }
 
 class PurePursuitTest : private PurePursuit
@@ -57,10 +58,10 @@ TEST_CASE( "Test get location on path", "[path_location]" )
         PurePursuitTest test_class( p, 5 );
 
         auto location = test_class.get_location_on_path_test( { 5, 5 } );
-        REQUIRE( location.first == Point2D( 5, 0 ) );
+        CHECK( location.first == Point2D( 5, 0 ) );
 
         location = test_class.get_location_on_path_test( { 3, 3 } );
-        REQUIRE( location.first == Point2D(  3, 0  ) );
+        CHECK( location.first == Point2D( 3, 0 ) );
     }
 
     SECTION( "Edge Case" )
@@ -68,65 +69,51 @@ TEST_CASE( "Test get location on path", "[path_location]" )
         Path p = { { 0, 0, 0 }, { 10, 0, 10 } };
         PurePursuitTest test_class( p, 5 );
         auto location = test_class.get_location_on_path_test( { 11, 0 } );
-        REQUIRE( location.first == Point2D( { 10, 0 } ) );
+        CHECK( location.first == Point2D( 10, 0 ) );
     }
 }
 
-TEST_CASE("Test get point on path", "[point_path]")
+TEST_CASE( "Test get point on path", "[point_path]" )
 {
-    /**
-        * Path path = {{0,0,0},{10,0,10},{20,0,10}};
-        * auto point = get_point_on_path(15);
-        * point.x should be 15
-        * point.y should be 0
-        * point.z should be 10
-    */
-
-
-    SECTION("Simple Test")
+    SECTION( "Simple Test" )
     {
-        Path p = { { 0, 0, 0 }, { 10, 0, 10 }, { 20 , 0, 10 } };
-        PurePursuitTest test_class( p, 5);
+        Path p = { { 0, 0, 0 }, { 10, 0, 10 }, { 20, 0, 10 } };
+        PurePursuitTest test_class( p, 5 );
         auto point = test_class.get_point_on_path_test( 15 );
-        REQUIRE( point == Point3D( { 15, 0, 10 } ) );
+        CHECK( point == Point3D( 15, 0, 10 ) );
     }
 
     SECTION( "Complex Path" )
     {
         Point3D exp = { 3.528, 5.3704, 10.7864 };
-
-
         Path p = { { 0, 3, 0 }, { 2, 1, 3 }, { 4, 6, 10 }, { 1, 2, 15 } };
-        PurePursuitTest test_class(p, 5);
+        PurePursuitTest test_class( p, 5 );
         auto point = test_class.get_point_on_path_test( 9 );
-
-        REQUIRE( approximately_equals(exp, point) );
-
+        CHECK( approximately_equals( exp, point ) );
     }
 
-    SECTION("Parallel to y axis")
+    SECTION( "Parallel to y axis" )
     {
         Point3D exp = { 3, 5.694449, 11.04167 };
-        Path p = { { 1, 2, 0 } , { 3, 5, 10 } , { 3, 7, 13 } , { 4, 9, 15 } };
-        PurePursuitTest test_class( p, 5);
+        Path p      = { { 1, 2, 0 }, { 3, 5, 10 }, { 3, 7, 13 }, { 4, 9, 15 } };
+        PurePursuitTest test_class( p, 5 );
         auto point = test_class.get_point_on_path_test( 4.3 );
-        REQUIRE( approximately_equals( exp, point ) );
-
+        CHECK( approximately_equals( exp, point ) );
     }
 
-    SECTION( "Edge Case: Position too high")
+    SECTION( "Edge Case: Position too high" )
     {
-        Path p = { { 0, 0, 0 }, { 10, 0, 10 }, { 20 , 0, 10 } };
-        PurePursuitTest test_class( p, 5);
+        Path p = { { 0, 0, 0 }, { 10, 0, 10 }, { 20, 0, 10 } };
+        PurePursuitTest test_class( p, 5 );
         auto point = test_class.get_point_on_path_test( 43 );
-        REQUIRE( point == Point3D( { 20, 0, 10 } ) );
+        CHECK( point == Point3D( 20, 0, 10 ) );
     }
 
-    SECTION( "Edge Case: Position is Negative")
+    SECTION( "Edge Case: Position is Negative" )
     {
-        Path p = { { 0, 0, 0 }, { 10, 0, 10 }, { 20 , 0, 10 } };
-        PurePursuitTest test_class( p, 5);
+        Path p = { { 0, 0, 0 }, { 10, 0, 10 }, { 20, 0, 10 } };
+        PurePursuitTest test_class( p, 5 );
         auto point = test_class.get_point_on_path_test( -15 );
-        REQUIRE( point == Point3D( { 0, 0, 0 } ) );
+        CHECK( point == Point3D( 0, 0, 0 ) );
     }
 }
