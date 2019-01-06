@@ -17,6 +17,19 @@ double distanceFormula(const Point3D& point1, const Point3D& point2)
     return dist;
 }
 
+
+double PurePursuit::path_length()
+{
+    double totalLength = 0;
+
+    for (int i = 0; i < ( m_robot_path.size() - 1 ); i++ ) //will use current point (i) and next point (i+1)
+    {                                                        // until i = the second to last point in vector
+        totalLength += distanceFormula(m_robot_path.at(i), m_robot_path.at(i+1));
+    }
+
+    return totalLength;
+}
+
 /**
 	* @brief Will return a target linear and angular velocity as a Point2D
 	* where x is the linear velocity and y is the angular velocity
@@ -42,51 +55,72 @@ Point3D PurePursuit::get_point_on_path(const double& position)
     double sum = 0; // must be initialized to the first path point bc for loop adds on the following point
     double distance, slope = 0;
     double zVal = 0, yVal = 0, xVal = 0;
+    unsigned long vectSize = m_robot_path.size();
     Point3D newPoint;
 
-    for (int i = 0; i < (m_robot_path.size() - 1); i++) { //loop until second to last point in path
-        numerator = m_robot_path.at(i+1).y - m_robot_path.at(i).y; //i + 1 looks ahead to next point in path in order to act as point 2 in the slope formula
-        denominator = m_robot_path.at(i+1).x - m_robot_path.at(i).x; // denominator subtracts x values of two points
+    if ( (path_length() > position) && (position > 0) )
+    {
+        for ( unsigned long i = 0; i < (vectSize - 1); i++ ) { //loop until second to last point in path
+            numerator = m_robot_path.at(i + 1).y - m_robot_path.at(i).y; //i + 1 looks ahead to next point in path in order to act as point 2 in the slope formula
+            denominator = m_robot_path.at(i + 1).x - m_robot_path.at(i).x; // denominator subtracts x values of two points
 
-        if (denominator != 0) //this means that line is not parallel to the y axis
-        {
-            sum += distanceFormula(m_robot_path.at(i), m_robot_path.at(i+1)); //distance formula
-            if (sum >= position) //if the distance is greater than that means the position is between i and i+1
+            if (denominator != 0) //this means that line is not parallel to the y axis
             {
-                distance = sum - m_robot_path.at(i+1).x;
-                distance = position - distance;
-                slope = numerator / denominator;
+                sum += distanceFormula(m_robot_path.at(i), m_robot_path.at(i + 1)); //distance formula
+                if (sum >= position) //if the distance is greater than that means the position is between i and i+1
+                {
+                    distance = sum - distanceFormula(m_robot_path.at(i), m_robot_path.at(i + 1));
+                    distance = position - distance;
+                    slope = numerator / denominator;
 
-                //in order to find x value of new point must use equation of a circle with radius of distance
-                // and center point of m_robot_path.at(i)... then the eq x = x1 + distance/ (sgrt(1 + m^2) is derived
+                    //in order to find x value of new point must use equation of a circle with radius of distance
+                    // and center point of m_robot_path.at(i)... then the eq x = x1 + distance/ (sgrt(1 + m^2) is derived
+                    if (m_robot_path.at(i).x < m_robot_path.at(i+1).x)
+                    { xVal = m_robot_path.at(i).x + (distance / std::sqrt(1 + (slope * slope))); }
+                    else
+                    { xVal = m_robot_path.at(i).x - (distance / std::sqrt(1 + (slope * slope))); }
 
-                xVal = m_robot_path.at(i).x + (distance/ std::sqrt(1 + (slope * slope)));
-                yVal = (slope * xVal) - (slope * m_robot_path.at(i).x) + m_robot_path.at(i).y;
-                //FIND Z
-                pscale(distance, 0, distanceFormula(m_robot_path.at(i), m_robot_path.at(i+1)), m_robot_path.at(i).z, m_robot_path.at(i+1).z);
+                    yVal = (slope * xVal) - (slope * m_robot_path.at(i).x) + m_robot_path.at(i).y;
+                    //FIND Z
+                    pscale(distance, 0, distanceFormula(m_robot_path.at(i), m_robot_path.at(i + 1)),
+                           m_robot_path.at(i).z, m_robot_path.at(i + 1).z);
 
-                break; //to break out of for loop
+                    break; //to break out of for loop
+                }
+                //else it does not do anything
             }
-            //else it does not do anything
-        }
-        else // line is parallel to y-axis
-        {
-            sum += m_robot_path.at(i+1).y;
-            if (sum >= position) //if the distance is greater than that means the position is between i and i+1
+            else // line is parallel to y-axis
             {
-                distance = sum - m_robot_path.at(i+1).y;
-                distance = position - distance;
+                sum += distanceFormula( m_robot_path.at(i), m_robot_path.at(i+1) );
+                if (sum >= position) //if the distance is greater than that means the position is between i and i+1
+                {
+                    distance = sum - distanceFormula(m_robot_path.at(i), m_robot_path.at(i + 1));
+                    distance = position - distance;
 
-                xVal = m_robot_path.at(i).x; //point only moved on y axis between i and i + 1
-                yVal = distance + m_robot_path.at(i).y; //add the remaining distance to push point up
+                    xVal = m_robot_path.at(i).x; //point only moved on y axis between i and i + 1
+                    yVal = distance + m_robot_path.at(i).y; //add the remaining distance to push point up
 
-                //FIND Z
-                pscale(distance, 0, distanceFormula(m_robot_path.at(i), m_robot_path.at(i+1)), m_robot_path.at(i).z, m_robot_path.at(i+1).z);
+                    //FIND Z
+                    pscale(distance, 0, distanceFormula(m_robot_path.at(i), m_robot_path.at(i + 1)),
+                           m_robot_path.at(i).z, m_robot_path.at(i + 1).z);
 
-                break; //to break out of for loop
+                    break; //to break out of for loop
 
+                }
             }
         }
+    }
+    else if (position <= 0) //the postion is negative or 0 so return the first path location
+    {
+        xVal = m_robot_path.at(0).x;
+        yVal = m_robot_path.at(0).y;
+        zVal = m_robot_path.at(0).z;
+    }
+    else //the position is either larger than or equal to the path length
+    {
+        xVal = m_robot_path.at(vectSize - 1).x;
+        yVal = m_robot_path.at(vectSize - 1).y;
+        zVal = m_robot_path.at(vectSize - 1).z;
     }
 
 

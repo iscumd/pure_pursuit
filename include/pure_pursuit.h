@@ -91,6 +91,13 @@ protected:
     */
     std::pair<Point2D, double> get_location_on_path( const Point2D& state );
 
+    /**
+     * @brief will find length of robot path
+     * uses distance formula
+     *
+     */
+    double path_length();
+
     double m_lookahead_distance;
     Path m_robot_path;
 };
