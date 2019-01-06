@@ -97,7 +97,7 @@ Point3D PurePursuit::get_point_on_path(const double& position)
 
                     yVal = (slope * xVal) - (slope * m_robot_path.at(i).x) + m_robot_path.at(i).y;
                     //FIND Z
-                    pscale(distance, 0, distanceFormula(m_robot_path.at(i), m_robot_path.at(i + 1)),
+                    zVal = pscale(distance, 0, distanceFormula(m_robot_path.at(i), m_robot_path.at(i + 1)),
                            m_robot_path.at(i).z, m_robot_path.at(i + 1).z);
 
                     break; //to break out of for loop
@@ -116,7 +116,7 @@ Point3D PurePursuit::get_point_on_path(const double& position)
                     yVal = distance + m_robot_path.at(i).y; //add the remaining distance to push point up
 
                     //FIND Z
-                    pscale(distance, 0, distanceFormula(m_robot_path.at(i), m_robot_path.at(i + 1)),
+                    zVal = pscale(distance, 0, distanceFormula(m_robot_path.at(i), m_robot_path.at(i + 1)),
                            m_robot_path.at(i).z, m_robot_path.at(i + 1).z);
 
                     break; //to break out of for loop
