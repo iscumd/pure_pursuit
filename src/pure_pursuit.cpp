@@ -147,9 +147,15 @@ Point3D PurePursuit::get_point_on_path(const double& position)
 }
 
 
-
-
 std::pair<Point2D, double> PurePursuit::get_location_on_path(const Point2D &state)
 {
 
+}
+
+double PurePursuit::get_distance_to_point(const Point3D& currPoint )
+{
+    for (int i = 0; i < ( m_robot_path.size() - 1 ); i++ )
+    {
+        //find the equation for each segment. find where the point lies. then use the distance formula
+    }
 }

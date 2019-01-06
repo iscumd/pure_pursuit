@@ -98,6 +98,8 @@ protected:
      */
     double path_length();
 
+    double get_distance_to_point(const Point3D& currPoint );
+
     double m_lookahead_distance;
     Path m_robot_path;
 };
