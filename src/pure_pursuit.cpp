@@ -252,4 +252,6 @@ double PurePursuit::get_distance_to_point( const Point3D& currPoint )
         }
 
     }
+
+    return sum;
 }

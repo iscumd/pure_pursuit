@@ -117,3 +117,50 @@ TEST_CASE( "Test get point on path", "[point_path]" )
         CHECK( point == Point3D( 0, 0, 0 ) );
     }
 }
+
+
+
+TEST_CASE( "Test get distance to point", "[distance_point]" )
+{
+    SECTION( "Simple Test" )
+    {
+        Path p = { { 0, 0, 0 }, { 10, 0, 10 }, { 20, 0, 10 } };
+        PurePursuitTest test_class( p, 5 );
+        auto point = test_class.get_point_on_path_test( 15 );
+        CHECK( point == Point3D( 15, 0, 10 ) );
+    }
+
+    SECTION( "Complex Path" )
+    {
+        Point3D exp = { 3.528, 5.3704, 10.7864 };
+        Path p = { { 0, 3, 0 }, { 2, 1, 3 }, { 4, 6, 10 }, { 1, 2, 15 } };
+        PurePursuitTest test_class( p, 5 );
+        auto point = test_class.get_point_on_path_test( 9 );
+        CHECK( approximately_equals( exp, point ) );
+    }
+
+    SECTION( "Parallel to y axis" )
+    {
+        Point3D exp = { 3, 5.694449, 11.04167 };
+        Path p      = { { 1, 2, 0 }, { 3, 5, 10 }, { 3, 7, 13 }, { 4, 9, 15 } };
+        PurePursuitTest test_class( p, 5 );
+        auto point = test_class.get_point_on_path_test( 4.3 );
+        CHECK( approximately_equals( exp, point ) );
+    }
+
+    SECTION( "Edge Case: Position too high" )
+    {
+        Path p = { { 0, 0, 0 }, { 10, 0, 10 }, { 20, 0, 10 } };
+        PurePursuitTest test_class( p, 5 );
+        auto point = test_class.get_point_on_path_test( 43 );
+        CHECK( point == Point3D( 20, 0, 10 ) );
+    }
+
+    SECTION( "Edge Case: Position is Negative" )
+    {
+        Path p = { { 0, 0, 0 }, { 10, 0, 10 }, { 20, 0, 10 } };
+        PurePursuitTest test_class( p, 5 );
+        auto point = test_class.get_point_on_path_test( -15 );
+        CHECK( point == Point3D( 0, 0, 0 ) );
+    }
+}
