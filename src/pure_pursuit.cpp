@@ -149,4 +149,7 @@ Point3D PurePursuit::get_point_on_path(const double& position)
 
 
 
-std::pair<Point2D, double> PurePursuit::get_location_on_path(const Point2D &state) {}
+std::pair<Point2D, double> PurePursuit::get_location_on_path(const Point2D &state)
+{
+
+}
