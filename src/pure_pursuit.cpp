@@ -18,6 +18,30 @@ double distanceFormula( const Point3D& point1, const Point3D& point2 )
                       + std::pow( ( point2.y - point1.y ), 2 ) );
 }
 
+double
+distanceFormula( const Point2D& point1,
+                 const Point2D& point2 )  // function overloading so usable with point2d
+{
+    return std::sqrt( std::pow( ( point2.x - point1.x ), 2 )
+                      + std::pow( ( point2.y - point1.y ), 2 ) );
+}
+
+double distanceFormula(
+    const Point2D& point1,
+    const Point3D& point2 )  // function overloading so usable with point2d and path
+{
+    return std::sqrt( std::pow( ( point2.x - point1.x ), 2 )
+                      + std::pow( ( point2.y - point1.y ), 2 ) );
+}
+
+double distanceFormula(
+    const Point3D& point1,
+    const Point2D& point2 )  // function overloading so usable with point2d and path
+{
+    return std::sqrt( std::pow( ( point2.x - point1.x ), 2 )
+                      + std::pow( ( point2.y - point1.y ), 2 ) );
+}
+
 
 double PurePursuit::path_length()
 {
@@ -190,7 +214,9 @@ Point3D PurePursuit::get_point_on_path( const double& position )
 
 std::pair<Point2D, double> PurePursuit::get_location_on_path( const Point2D& state ) {}
 
-double PurePursuit::get_distance_to_point( const Point3D& currPoint )
+
+double PurePursuit::get_distance_to_point(
+    const Point2D& currPoint )  // assumption: the point 3D exists on the path
 {
     double sum = 0, numerator = 0, denominator = 0, slope = 0;
     double yVal = 0;
@@ -200,57 +226,76 @@ double PurePursuit::get_distance_to_point( const Point3D& currPoint )
         // find the equation for each segment. find where the point lies. then use the
         // distance formula
         numerator = m_robot_path.at( i + 1 ).y
-                    - m_robot_path.at( i ).y;  // i + 1 looks ahead to next point in path in
+            - m_robot_path.at( i ).y;  // i + 1 looks ahead to next point in path in
         // order to act as point 2 in the slope
         // formula
         denominator = m_robot_path.at( i + 1 ).x
-                      - m_robot_path.at( i )
-                              .x;  // denominator subtracts x values of two points
-        if (denominator != 0) {
+            - m_robot_path.at( i ).x;  // denominator subtracts x values of two points
+        if ( denominator != 0 )
+        {
 
             sum += distanceFormula( m_robot_path.at( i ),
                                     m_robot_path.at( i + 1 ) );  // distance formula
             slope = numerator / denominator;
 
-            yVal = (slope * currPoint.x) - (slope * m_robot_path.at(i).x)
-                   + m_robot_path.at(i).y;
-            if (yVal == currPoint.y)
+            yVal = ( slope * currPoint.x )
+                - ( slope
+                    * m_robot_path.at( i ).x )  // finds the equation of the line segment
+                + m_robot_path.at( i ).y;
+            if ( yVal == currPoint.y )  // means parameter lies on this line segment
             {
 
-                sum -= distanceFormula( m_robot_path.at( i ),
-                                        m_robot_path.at( i + 1 ) );  // distance formula
+                sum -= distanceFormula(
+                    m_robot_path.at( i ),
+                    m_robot_path.at(
+                        i + 1 ) );  // subtract the length of whole line segment
                 sum += distanceFormula( m_robot_path.at( i ),
-                                        currPoint );  // distance formula
+                                        currPoint );  // adds the distance from point i
+                                                      // to the parameter point
+                break;
             }
         }
         else
         {
-            sum += distanceFormula(m_robot_path.at(i), m_robot_path.at(i+1));
-            if (currPoint.x == m_robot_path.at(i).x) //Means that x values are same and currPoint could be on segment
+            sum += distanceFormula( m_robot_path.at( i ), m_robot_path.at( i + 1 ) );
+            if ( currPoint.x == m_robot_path.at( i ).x )  // Means that x values are same
+                                                          // and currPoint could be on
+                                                          // segment
             {
-                if (m_robot_path.at(i).y <= m_robot_path.at(i+1).y)
+                if ( m_robot_path.at( i ).y <= m_robot_path.at( i + 1 ).y )
                 {
-                    if ((currPoint.y >= m_robot_path.at(i).y) && (currPoint.y <= m_robot_path.at(i+1).y)) //means that currPoint is on path bhe
+                    if ( ( currPoint.y >= m_robot_path.at( i ).y )
+                         && ( currPoint.y
+                              <= m_robot_path.at( i + 1 )
+                                     .y ) )  // means that currPoint is on segment
                     {
-                        sum -= distanceFormula( m_robot_path.at( i ),
-                                                m_robot_path.at( i + 1 ) );  // distance formula
-                        sum += distanceFormula( m_robot_path.at( i ),
-                                                currPoint );
+                        sum -= distanceFormula(
+                            m_robot_path.at( i ),
+                            m_robot_path.at( i + 1 ) );  // subtract whole line segment
+                        sum += distanceFormula(
+                            m_robot_path.at( i ),
+                            currPoint );  // adds length from point i to the parameter
+                        break;
                     }
                 }
                 else
                 {
-                    if ((currPoint.y <= m_robot_path.at(i).y) && (currPoint.y >= m_robot_path.at(i+1).y)) //means that currPoint is on path bhe
+                    if ( ( currPoint.y <= m_robot_path.at( i ).y )
+                         && ( currPoint.y
+                              >= m_robot_path.at( i + 1 )
+                                     .y ) )  // means that currPoint is on this path
                     {
-                        sum -= distanceFormula( m_robot_path.at( i ),
-                                                m_robot_path.at( i + 1 ) );  // distance formula
-                        sum += distanceFormula( m_robot_path.at( i ),
-                                                currPoint );
+                        sum -= distanceFormula(
+                            m_robot_path.at( i ),
+                            m_robot_path.at( i + 1 ) );  // subtract whole line segment
+                        sum += distanceFormula(
+                            m_robot_path.at( i ),
+                            currPoint );  // adds length from point i to the parameter
+                        break;
                     }
                 }
             }
         }
-
     }
 
     return sum;
