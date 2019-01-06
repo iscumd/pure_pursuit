@@ -192,9 +192,64 @@ std::pair<Point2D, double> PurePursuit::get_location_on_path( const Point2D& sta
 
 double PurePursuit::get_distance_to_point( const Point3D& currPoint )
 {
+    double sum = 0, numerator = 0, denominator = 0, slope = 0;
+    double yVal = 0;
+
     for ( int i = 0; i < ( m_robot_path.size() - 1 ); i++ )
     {
         // find the equation for each segment. find where the point lies. then use the
         // distance formula
+        numerator = m_robot_path.at( i + 1 ).y
+                    - m_robot_path.at( i ).y;  // i + 1 looks ahead to next point in path in
+        // order to act as point 2 in the slope
+        // formula
+        denominator = m_robot_path.at( i + 1 ).x
+                      - m_robot_path.at( i )
+                              .x;  // denominator subtracts x values of two points
+        if (denominator != 0) {
+
+            sum += distanceFormula( m_robot_path.at( i ),
+                                    m_robot_path.at( i + 1 ) );  // distance formula
+            slope = numerator / denominator;
+
+            yVal = (slope * currPoint.x) - (slope * m_robot_path.at(i).x)
+                   + m_robot_path.at(i).y;
+            if (yVal == currPoint.y)
+            {
+
+                sum -= distanceFormula( m_robot_path.at( i ),
+                                        m_robot_path.at( i + 1 ) );  // distance formula
+                sum += distanceFormula( m_robot_path.at( i ),
+                                        currPoint );  // distance formula
+            }
+        }
+        else
+        {
+            sum += distanceFormula(m_robot_path.at(i), m_robot_path.at(i+1));
+            if (currPoint.x == m_robot_path.at(i).x) //Means that x values are same and currPoint could be on segment
+            {
+                if (m_robot_path.at(i).y <= m_robot_path.at(i+1).y)
+                {
+                    if ((currPoint.y >= m_robot_path.at(i).y) && (currPoint.y <= m_robot_path.at(i+1).y)) //means that currPoint is on path bhe
+                    {
+                        sum -= distanceFormula( m_robot_path.at( i ),
+                                                m_robot_path.at( i + 1 ) );  // distance formula
+                        sum += distanceFormula( m_robot_path.at( i ),
+                                                currPoint );
+                    }
+                }
+                else
+                {
+                    if ((currPoint.y <= m_robot_path.at(i).y) && (currPoint.y >= m_robot_path.at(i+1).y)) //means that currPoint is on path bhe
+                    {
+                        sum -= distanceFormula( m_robot_path.at( i ),
+                                                m_robot_path.at( i + 1 ) );  // distance formula
+                        sum += distanceFormula( m_robot_path.at( i ),
+                                                currPoint );
+                    }
+                }
+            }
+        }
+
     }
 }
