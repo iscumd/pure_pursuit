@@ -220,6 +220,7 @@ double PurePursuit::get_distance_to_point(
 {
     double sum = 0, numerator = 0, denominator = 0, slope = 0;
     double yVal = 0;
+    bool found = false;
 
     for ( int i = 0; i < ( m_robot_path.size() - 1 ); i++ )
     {
@@ -252,6 +253,7 @@ double PurePursuit::get_distance_to_point(
                 sum += distanceFormula( m_robot_path.at( i ),
                                         currPoint );  // adds the distance from point i
                                                       // to the parameter point
+                found = true;
                 break;
             }
         }
@@ -275,6 +277,7 @@ double PurePursuit::get_distance_to_point(
                         sum += distanceFormula(
                             m_robot_path.at( i ),
                             currPoint );  // adds length from point i to the parameter
+                        found = true;
                         break;
                     }
                 }
@@ -291,11 +294,17 @@ double PurePursuit::get_distance_to_point(
                         sum += distanceFormula(
                             m_robot_path.at( i ),
                             currPoint );  // adds length from point i to the parameter
+                        found = true;
                         break;
                     }
                 }
             }
         }
+    }
+
+    if (!found)
+    {
+        sum = -1;
     }
 
     return sum;
