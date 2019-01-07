@@ -53,6 +53,8 @@ public:
     {
         return get_distance_to_point( point );
     }
+
+    double path_length_test() { return path_length(); }
 };
 
 TEST_CASE( "Test get location on path", "[path_location]" )
@@ -147,5 +149,18 @@ TEST_CASE( "Test get distance to point", "[distance_point]" )
         PurePursuitTest test_class( p, 5 );
         auto dist = test_class.get_distance_to_point_test( { 4.3, 13.25 } );
         CHECK( dist == Approx( 19.535712 ).margin( 1e-3 ) );
+    }
+    SECTION( "Point not on path" )
+    {
+        Path p
+            = { { 1, 3, 0 }, { 4, 1, 10 }, { 4, 4, 10 }, { 5, 15, 10 }, { 3, 10, 10 } };
+        PurePursuitTest test_class( p, 5 );
+        auto dist = test_class.get_distance_to_point_test( { 100, 13.25 } );
+        auto l    = test_class.path_length_test();
+        CHECK( dist != l );
+        CHECK( dist == -1 );
+
+        auto dist2 = test_class.get_distance_to_point_test( { 3, 10 } );
+        CHECK(dist2 != -1);
     }
 }
