@@ -98,7 +98,14 @@ protected:
      */
     double path_length();
 
-    double get_distance_to_point( const Point3D& currPoint );
+    /**
+     *
+     * @pbrief parameter is a point that exists on the path, function will return the
+     * distance from first point on Path
+     * to the parameter point
+     *
+     */
+    double get_distance_to_point( const Point2D& currPoint );
 
     double m_lookahead_distance;
     Path m_robot_path;

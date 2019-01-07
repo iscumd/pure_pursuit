@@ -48,6 +48,13 @@ public:
     {
         return get_location_on_path( state );
     }
+
+    double get_distance_to_point_test( const Point2D& point )
+    {
+        return get_distance_to_point( point );
+    }
+
+    double path_length_test() { return path_length(); }
 };
 
 TEST_CASE( "Test get location on path", "[path_location]" )
@@ -86,7 +93,7 @@ TEST_CASE( "Test get point on path", "[point_path]" )
     SECTION( "Complex Path" )
     {
         Point3D exp = { 3.528, 5.3704, 10.7864 };
-        Path p = { { 0, 3, 0 }, { 2, 1, 3 }, { 4, 6, 10 }, { 1, 2, 15 } };
+        Path p      = { { 0, 3, 0 }, { 2, 1, 3 }, { 4, 6, 10 }, { 1, 2, 15 } };
         PurePursuitTest test_class( p, 5 );
         auto point = test_class.get_point_on_path_test( 9 );
         CHECK( approximately_equals( exp, point ) );
@@ -115,5 +122,45 @@ TEST_CASE( "Test get point on path", "[point_path]" )
         PurePursuitTest test_class( p, 5 );
         auto point = test_class.get_point_on_path_test( -15 );
         CHECK( point == Point3D( 0, 0, 0 ) );
+    }
+}
+
+
+TEST_CASE( "Test get distance to point", "[distance_point]" )
+{
+    SECTION( "Simple Test" )
+    {
+        Path p = { { 0, 0, 0 }, { 5, 10, 10 }, { 10, 20, 10 } };
+        PurePursuitTest test_class( p, 5 );
+        auto dist = test_class.get_distance_to_point_test( { 6, 12 } );
+        CHECK( dist == Approx( 13.416407864 ).margin( 1e-3 ) );
+    }
+    SECTION( "Point on segment parallel to the y-axis " )
+    {
+        Path p = { { 0, 0, 0 }, { 5, 10, 10 }, { 10, 5, 10 }, { 10, 15, 10 } };
+        PurePursuitTest test_class( p, 5 );
+        auto dist = test_class.get_distance_to_point_test( { 10, 10 } );
+        CHECK( dist == Approx( 23.251407 ).margin( 1e-3 ) );
+    }
+    SECTION( "Complex Path" )
+    {
+        Path p
+            = { { 1, 3, 0 }, { 4, 1, 10 }, { 4, 4, 10 }, { 5, 15, 10 }, { 3, 10, 10 } };
+        PurePursuitTest test_class( p, 5 );
+        auto dist = test_class.get_distance_to_point_test( { 4.3, 13.25 } );
+        CHECK( dist == Approx( 19.535712 ).margin( 1e-3 ) );
+    }
+    SECTION( "Point not on path" )
+    {
+        Path p
+            = { { 1, 3, 0 }, { 4, 1, 10 }, { 4, 4, 10 }, { 5, 15, 10 }, { 3, 10, 10 } };
+        PurePursuitTest test_class( p, 5 );
+        auto dist = test_class.get_distance_to_point_test( { 100, 13.25 } );
+        auto l    = test_class.path_length_test();
+        CHECK( dist != l );
+        CHECK( dist == -1 );
+
+        auto dist2 = test_class.get_distance_to_point_test( { 3, 10 } );
+        CHECK( dist2 != -1 );
     }
 }
