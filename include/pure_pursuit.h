@@ -84,12 +84,9 @@ protected:
     /**
     * @brief will get the robots location on a path segment where the first value is the
     * x,y coordinate of the
-    * path location. and the second value is a double that represents its location on a
-    * path
-     *
      * Search for the shortest distance from the robot to each path segment
     */
-    std::pair<Point2D, double> get_location_on_path( const Point2D& state );
+    Point2D get_location_on_path( const Point2D& state );
 
     /**
      * @brief will find length of robot path

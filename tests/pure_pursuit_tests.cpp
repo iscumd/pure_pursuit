@@ -55,6 +55,7 @@ public:
     }
 
     double path_length_test() { return path_length(); }
+
 };
 
 TEST_CASE( "Test get location on path", "[path_location]" )
@@ -162,5 +163,31 @@ TEST_CASE( "Test get distance to point", "[distance_point]" )
 
         auto dist2 = test_class.get_distance_to_point_test( { 3, 10 } );
         CHECK( dist2 != -1 );
+    }
+}
+
+TEST_CASE( "Test get lookahead point", "[lookahead_point]" )
+{
+    SECTION( "Simple Test" )
+    {
+        Path p = { { 0, 0, 0 }, { 5, 10, 10 }, { 20, 20, 10 } };
+        PurePursuitTest test_class( p, 5 );
+        auto dist = test_class.get_lookahead_point_test( { 6, 12, 10 } );
+        CHECK( dist == Approx( 13.416407864 ).margin( 1e-3 ) );
+    }
+    SECTION( "Point on segment parallel to the y-axis " )
+    {
+        Path p = { { 0, 0, 0 }, { 5, 10, 10 }, { 10, 5, 10 }, { 10, 25, 10 } };
+        PurePursuitTest test_class( p, 5 );
+        auto dist = test_class.get_lookahead_point_test( { 10, 10, 10 } );
+        CHECK( dist == Approx( 23.251407 ).margin( 1e-3 ) );
+    }
+    SECTION( "Complex Path" )
+    {
+        Path p
+                = { { 1, 3, 0 }, { 4, 1, 10 }, { 4, 4, 10 }, { 5, 15, 10 }, { 3, 10, 10 } , {8, 20, 10} };
+        PurePursuitTest test_class( p, 5 );
+        auto dist = test_class.get_lookahead_point_test( { 4.3, 13.25, 10 } );
+        CHECK( dist == Approx( 19.535712 ).margin( 1e-3 ) );
     }
 }
