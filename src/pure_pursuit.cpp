@@ -1,6 +1,63 @@
 // implement class here
 #include "pure_pursuit.h"
 #include <cmath>
+#include <limits>
+#include <stdexcept>
+
+std::pair<Point2D, double> project_to_line_segment( Point2D p, Segment2D seg )
+{
+    /* This implementation is a slightly modified version of the function from :
+     * http://forums.codeguru.com/showthread.php?194400-Distance-between-point-and-line-segment
+     */
+    double cx            = p.x;
+    double cy            = p.y;
+    double ax            = seg.first.x;
+    double ay            = seg.first.y;
+    double bx            = seg.second.x;
+    double by            = seg.second.y;
+    double r_numerator   = ( cx - ax ) * ( bx - ax ) + ( cy - ay ) * ( by - ay );
+    double r_denomenator = ( bx - ax ) * ( bx - ax ) + ( by - ay ) * ( by - ay );
+    double r             = r_numerator / r_denomenator;
+
+    double px = ax + r * ( bx - ax );
+    double py = ay + r * ( by - ay );
+
+    double s = ( ( ay - cy ) * ( bx - ax ) - ( ax - cx ) * ( by - ay ) ) / r_denomenator;
+
+    double distanceLine    = fabs( s ) * sqrt( r_denomenator );
+    double distanceSegment = -1;
+    //
+    // (xx,yy) is the point on the lineSegment closest to (cx,cy)
+    //
+    double xx = px;
+    double yy = py;
+
+    if ( ( r >= 0 ) && ( r <= 1 ) )
+    {
+        distanceSegment = distanceLine;
+    }
+    else
+    {
+
+        double dist1 = ( cx - ax ) * ( cx - ax ) + ( cy - ay ) * ( cy - ay );
+        double dist2 = ( cx - bx ) * ( cx - bx ) + ( cy - by ) * ( cy - by );
+        if ( dist1 < dist2 )
+        {
+            xx              = ax;
+            yy              = ay;
+            distanceSegment = sqrt( dist1 );
+        }
+        else
+        {
+            xx              = bx;
+            yy              = by;
+            distanceSegment = sqrt( dist2 );
+        }
+    }
+
+    return std::make_pair( Point2D( xx, yy ), distanceSegment );
+}
+
 
 // function to scale values in one range to values in another range -  proportional
 // scaling.. this is to find z value
@@ -212,7 +269,37 @@ Point3D PurePursuit::get_point_on_path( const double& position )
 }
 
 
-std::pair<Point2D, double> PurePursuit::get_location_on_path( const Point2D& state ) {}
+std::pair<Point2D, double> PurePursuit::get_location_on_path( const Point2D& state )
+{
+    double shortest_dist = std::numeric_limits<double>::max();
+    std::pair<Point2D, double> shortest_dist_point;
+    shortest_dist_point.second = -1;
+
+    if ( m_robot_path.size() < 2 )
+    {
+        throw std::runtime_error( "Path must contain at least 2 points" );
+    }
+
+    for ( unsigned long i = 0; i < m_robot_path.size() - 1; ++i )
+    {
+        auto line_proj = project_to_line_segment(
+            state, std::make_pair( m_robot_path.at( i ).to2D(),
+                                   m_robot_path.at( i + 1 ).to2D() ) );
+        if ( line_proj.second < shortest_dist )
+        {
+            shortest_dist       = line_proj.second;
+            shortest_dist_point = line_proj;
+        }
+    }
+    if ( shortest_dist_point.second != -1 )
+    {
+        return shortest_dist_point;
+    }
+    else
+    {
+        throw std::runtime_error( "Unable to find shortest distance" );
+    }
+}
 
 
 double PurePursuit::get_distance_to_point(
