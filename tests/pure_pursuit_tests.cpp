@@ -7,6 +7,11 @@ bool approximately_equals( Point3D expected, Point3D actual )
         && ( actual.y == Approx( expected.y ).margin( 1e-3 ) )
         && ( actual.z == Approx( expected.z ).margin( 1e-3 ) );
 }
+bool approximately_equals( Point2D expected, Point2D actual )
+{
+    return ( actual.x == Approx( expected.x ).margin( 1e-3 ) )
+        && ( actual.y == Approx( expected.y ).margin( 1e-3 ) );
+}
 
 class PurePursuitTest : private PurePursuit
 {
@@ -65,10 +70,20 @@ TEST_CASE( "Test get location on path", "[path_location]" )
         PurePursuitTest test_class( p, 5 );
 
         auto location = test_class.get_location_on_path_test( { 5, 5 } );
-        CHECK( location.first == Point2D( 5, 0 ) );
+        CHECK( approximately_equals( location.first, Point2D( 5, 0 ) ) );
+        CHECK( location.second == Approx( 5 ).margin( 1e-3 ) );
 
         location = test_class.get_location_on_path_test( { 3, 3 } );
-        CHECK( location.first == Point2D( 3, 0 ) );
+        CHECK( approximately_equals( location.first, Point2D( 3, 0 ) ) );
+        CHECK( location.second == Approx( 3 ).margin( 1e-3 ) );
+    }
+
+    SECTION( "Parallel to y axis" )
+    {
+        Path p = { { 1, 2, 0 }, { 3, 5, 10 }, { 3, 7, 13 }, { 4, 9, 15 } };
+        PurePursuitTest test_class( p, 5 );
+        auto location = test_class.get_location_on_path_test( { 4, 6 } );
+        CHECK( approximately_equals( location.first, { 3, 6 } ) );
     }
 
     SECTION( "Edge Case" )
@@ -76,7 +91,8 @@ TEST_CASE( "Test get location on path", "[path_location]" )
         Path p = { { 0, 0, 0 }, { 10, 0, 10 } };
         PurePursuitTest test_class( p, 5 );
         auto location = test_class.get_location_on_path_test( { 11, 0 } );
-        CHECK( location.first == Point2D( 10, 0 ) );
+        CHECK( approximately_equals( location.first, Point2D( 10, 0 ) ) );
+        CHECK( location.second == Approx( 1 ).margin( 1e-3 ) );
     }
 }
 
