@@ -12,7 +12,7 @@ struct Point2D
         , y( iy )
     {
     }
-    Point2D(){}
+    Point2D() {}
 };
 
 bool operator==( const Point2D& lhs, const Point2D& rhs )
@@ -29,7 +29,7 @@ struct Point3D
         , z( iz )
     {
     }
-    Point3D(){}
+    Point3D() {}
 };
 
 bool operator==( const Point3D& lhs, const Point3D& rhs )
@@ -95,6 +95,22 @@ protected:
     */
     std::pair<Point2D, double> get_location_on_path( const Point2D& state );
 
-	double m_lookahead_distance;
+    /**
+     * @brief will find length of robot path
+     * uses distance formula
+     *
+     */
+    double path_length();
+
+    /**
+     *
+     * @brief parameter is a point that exists on the path, function will return the
+     * distance from first point on Path
+     * to the parameter point
+     *
+     */
+    double get_distance_to_point( const Point2D& currPoint );
+
+    double m_lookahead_distance;
     Path m_robot_path;
 };
