@@ -83,10 +83,18 @@ void PurePursuit::reset_lookahead_distance( const double& lookahead_distance ) {
   */
 Point3D PurePursuit::get_lookahead_point( const Point3D& state )
 {
-
-
+    //use get_location on path with state and then use get distance from point, add five to the return and call get point
+    //FIXME: is the double location function returns the point's distance from beginning of path????? or the distance
+    // FIXME: from the path the robot is away
     // USE THE LOOKAHEAD DISTANCE, FIND DISTANCE BEFORE THE CURRENT STATE THEN MOVE
-    // FORWORD ADDING DISTANCE
+    Point2D robotLocation = {state.x, state.y};
+    std::pair<Point2D, double> pointOnPath = get_location_on_path(robotLocation);
+
+    double lookaheadPointDistance = get_distance_to_point(pointOnPath.first) + m_lookahead_distance;
+
+    return get_point_on_path(lookaheadPointDistance);
+
+
 }
 
 std::pair<Point2D, Point2D>
