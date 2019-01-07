@@ -33,12 +33,6 @@ public:
         return get_lookahead_point( state );
     }
 
-    std::pair<Point2D, Point2D>
-    get_ongoing_path_segment_test( const int& current_segment )
-    {
-        return get_ongoing_path_segment( current_segment );
-    }
-
     Point3D get_point_on_path_test( const double& position )
     {
         return get_point_on_path( position );

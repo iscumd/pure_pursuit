@@ -225,7 +225,7 @@ double PurePursuit::get_distance_to_point(
     double yVal = 0;
     bool found  = false;
 
-    for ( int i = 0; i < ( m_robot_path.size() - 1 ); i++ )
+    for ( unsigned long i = 0; i < ( m_robot_path.size() - 1 ); i++ )
     {
         // find the equation for each segment. find where the point lies. then use the
         // distance formula

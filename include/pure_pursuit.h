@@ -86,11 +86,6 @@ protected:
     Point3D get_lookahead_point( const Point3D& state );
 
     /**
-    * @brief Will get the coordinates to the ongoing path segment where the first value is the point that has the smallest index in the path of the two values
-    */
-    std::pair<Point2D, Point2D> get_ongoing_path_segment( const int& current_segment );
-
-    /**
     * @brief Will get point3D on path according to path location
     */
     Point3D get_point_on_path( const double& position );
