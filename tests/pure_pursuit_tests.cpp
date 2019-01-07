@@ -161,6 +161,6 @@ TEST_CASE( "Test get distance to point", "[distance_point]" )
         CHECK( dist == -1 );
 
         auto dist2 = test_class.get_distance_to_point_test( { 3, 10 } );
-        CHECK(dist2 != -1);
+        CHECK( dist2 != -1 );
     }
 }

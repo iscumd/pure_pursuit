@@ -220,7 +220,7 @@ double PurePursuit::get_distance_to_point(
 {
     double sum = 0, numerator = 0, denominator = 0, slope = 0;
     double yVal = 0;
-    bool found = false;
+    bool found  = false;
 
     for ( int i = 0; i < ( m_robot_path.size() - 1 ); i++ )
     {
@@ -302,7 +302,7 @@ double PurePursuit::get_distance_to_point(
         }
     }
 
-    if (!found)
+    if ( !found )
     {
         sum = -1;
     }
