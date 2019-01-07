@@ -73,19 +73,20 @@ public:
 
     /**
     * @brief will reset lookahead distance
+     * @param the new lookahead distance
     */
     void reset_lookahead_distance( const double& lookahead_distance );
 
 protected:
     /**
     * @brief Will get the coordinates and target velocity of the lookahead point
+    * @param the current location of the robot
+     * @return Point3D variable for a point lookahead distance ahead of the state
     */
     Point3D get_lookahead_point( const Point3D& state );
 
     /**
-    * @brief Will get the coordinates to the ongoing path segment where the first value
-    * is
-    * the point that has the smallest index in the path of the two values
+    * @brief Will get the coordinates to the ongoing path segment where the first value is the point that has the smallest index in the path of the two values
     */
     std::pair<Point2D, Point2D> get_ongoing_path_segment( const int& current_segment );
 
