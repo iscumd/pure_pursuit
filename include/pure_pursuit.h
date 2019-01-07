@@ -1,5 +1,18 @@
+/**
+ * @file pure_pursuit.h
+ * @brief Path Tracking Program for a robot
+ * @author Aaron Cofield, JessRose Narsinghia, Andrew R. Davis
+ * @bug TO BE MARKED
+ */
+
+#ifndef PURE_PURSUIT_H
+#define PURE_PURSUIT_H
+
 #include <vector>
 
+/**
+ * @brief data structure to represent x and y coordinates for the robot
+ */
 struct Point2D
 {
     double x, y;
@@ -16,6 +29,9 @@ bool operator==( const Point2D& lhs, const Point2D& rhs )
     return ( lhs.x == rhs.x && lhs.y == rhs.y );
 }
 
+/**
+ * @brief: data structure to present x, y, and z (velocity) of the robot
+ */
 struct Point3D
 {
     double x, y, z;
@@ -43,18 +59,15 @@ public:
     PurePursuit( const Path& robot_path, const double& lookahead_distance );
 
     /**
-    * @brief Will return a target linear and angular velocity as a Point2D
-    * where x is the linear velocity and y is the angular velocity
-    *
-    * @input state a Point3D where x and y are the position of the bot and z is the
-    * orientation
-    *
-    * Implement waypoint following code here
+    * @brief
+    * @param state a Point3D where x and y are the position of the bot and z is the orientation
+    * @return a target linear and angular velocity as a Point2D where x is the linear velocity and y is the angula velocity.
     */
     Point2D get_target_state( const Point3D& state );
 
     /**
     * @brief will reset the path the robot must follow to a new robot path
+    * @param new path for the robot to follow as robot_path
     */
     void reset_path( const Path& robot_path );
 
@@ -107,3 +120,5 @@ protected:
     double m_lookahead_distance;
     Path m_robot_path;
 };
+
+#endif
