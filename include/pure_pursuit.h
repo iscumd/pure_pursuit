@@ -88,33 +88,29 @@ protected:
     Point3D get_lookahead_point( const Point3D& state );
 
     /**
-    * @brief Will get point3D on path according to path location
+    * @brief Will get the point on the path that corresponds to the distance form beginning of path
+     * @param position double value to represent point position
+     * @return the point3D that is on the path
     */
     Point3D get_point_on_path( const double& position );
 
     /**
-    * @brief will get the robots location on a path segment where the first value is the
-    * x,y coordinate of the
-    * path location. and the second value is a double that represents its distance to the
-    * path
-     *
-     * Search for the shortest distance from the robot to each path segment
+    * @brief will get the robots location on a path segment relevant to the location of the robot
+     * @param point of the robot (its current location_
+     * @return  first value is the x,y location coordinate of robot corresponding with the path. and the second value is a double distance between robot and the path
     */
     std::pair<Point2D, double> get_location_on_path( const Point2D& state );
 
     /**
-     * @brief will find length of robot path
-     * uses distance formula
-     *
+     * @brief will find total length of robot path
+     * @return total distance of path from first point to last point
      */
     double path_length();
 
     /**
-     *
-     * @pbrief parameter is a point that exists on the path, function will return the
-     * distance from first point on Path
-     * to the parameter point
-     *
+     * @brief gets total distance from first point on path to point on path
+     * @param point2D that exists on the path
+     * @return distance double from first point on Path to the parameter point
      */
     double get_distance_to_point( const Point2D& currPoint );
 
