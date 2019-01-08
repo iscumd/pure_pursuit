@@ -148,11 +148,6 @@ Point3D PurePursuit::get_lookahead_point( const Point3D& state )
     return get_point_on_path( lookaheadPointDistance );
 }
 
-std::pair<Point2D, Point2D>
-PurePursuit::get_ongoing_path_segment( const int& current_segment )
-{
-}
-
 
 Point3D PurePursuit::get_point_on_path( const double& position )
 {
