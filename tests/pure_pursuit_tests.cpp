@@ -7,6 +7,11 @@ bool approximately_equals( Point3D expected, Point3D actual )
         && ( actual.y == Approx( expected.y ).margin( 1e-3 ) )
         && ( actual.z == Approx( expected.z ).margin( 1e-3 ) );
 }
+bool approximately_equals( Point2D expected, Point2D actual )
+{
+    return ( actual.x == Approx( expected.x ).margin( 1e-3 ) )
+        && ( actual.y == Approx( expected.y ).margin( 1e-3 ) );
+}
 
 class PurePursuitTest : private PurePursuit
 {
@@ -55,7 +60,6 @@ public:
     }
 
     double path_length_test() { return path_length(); }
-
 };
 
 TEST_CASE( "Test get location on path", "[path_location]" )
@@ -64,12 +68,21 @@ TEST_CASE( "Test get location on path", "[path_location]" )
     {
         Path p = { { 0, 0, 0 }, { 10, 0, 10 } };
         PurePursuitTest test_class( p, 5 );
-
         auto location = test_class.get_location_on_path_test( { 5, 5 } );
-        CHECK( location.first == Point2D( 5, 0 ) );
+        CHECK( approximately_equals( location.first, Point2D( 5, 0 ) ) );
+        CHECK( location.second == Approx( 5 ).margin( 1e-3 ) );
 
         location = test_class.get_location_on_path_test( { 3, 3 } );
-        CHECK( location.first == Point2D( 3, 0 ) );
+        CHECK( approximately_equals( location.first, Point2D( 3, 0 ) ) );
+        CHECK( location.second == Approx( 3 ).margin( 1e-3 ) );
+    }
+
+    SECTION( "Parallel to y axis" )
+    {
+        Path p = { { 1, 2, 0 }, { 3, 5, 10 }, { 3, 7, 13 }, { 4, 9, 15 } };
+        PurePursuitTest test_class( p, 5 );
+        auto location = test_class.get_location_on_path_test( { 4, 6 } );
+        CHECK( approximately_equals( location.first, { 3, 6 } ) );
     }
 
     SECTION( "Edge Case" )
@@ -77,7 +90,8 @@ TEST_CASE( "Test get location on path", "[path_location]" )
         Path p = { { 0, 0, 0 }, { 10, 0, 10 } };
         PurePursuitTest test_class( p, 5 );
         auto location = test_class.get_location_on_path_test( { 11, 0 } );
-        CHECK( location.first == Point2D( 10, 0 ) );
+        CHECK( approximately_equals( location.first, Point2D( 10, 0 ) ) );
+        CHECK( location.second == Approx( 1 ).margin( 1e-3 ) );
     }
 }
 
@@ -85,28 +99,26 @@ TEST_CASE( "Test get point on path", "[point_path]" )
 {
     SECTION( "Simple Test" )
     {
-        Path p = { { 0, 0, 0 }, { 10, 0, 10 }, { 20, 0, 10 } };
+        Path p = { { 1, 2, 0 }, { 3, 5, 10 }, { 3, 7, 13 }, { 4, 9, 15 } };
         PurePursuitTest test_class( p, 5 );
-        auto point = test_class.get_point_on_path_test( 15 );
+        auto point = test_class.get_point_on_path_test( 7.605551 );
         CHECK( point == Point3D( 15, 0, 10 ) );
     }
 
     SECTION( "Complex Path" )
     {
-        Point3D exp = { 3.528, 5.3704, 10.7864 };
-        Path p      = { { 0, 3, 0 }, { 2, 1, 3 }, { 4, 6, 10 }, { 1, 2, 15 } };
+        Path p = { { 0, 3, 0 }, { 2, 1, 3 }, { 4, 6, 10 }, { 1, 2, 15 } };
         PurePursuitTest test_class( p, 5 );
         auto point = test_class.get_point_on_path_test( 9 );
-        CHECK( approximately_equals( exp, point ) );
+        CHECK( approximately_equals( Point3D( 3.528, 5.3704, 10.7864 ), point ) );
     }
 
     SECTION( "Parallel to y axis" )
     {
-        Point3D exp = { 3, 5.694449, 11.04167 };
-        Path p      = { { 1, 2, 0 }, { 3, 5, 10 }, { 3, 7, 13 }, { 4, 9, 15 } };
+        Path p = { { 1, 2, 0 }, { 3, 5, 10 }, { 3, 7, 13 }, { 4, 9, 15 } };
         PurePursuitTest test_class( p, 5 );
         auto point = test_class.get_point_on_path_test( 4.3 );
-        CHECK( approximately_equals( exp, point ) );
+        CHECK( approximately_equals( Point3D( 3, 5.694449, 11.04167 ), point ) );
     }
 
     SECTION( "Edge Case: Position too high" )
@@ -170,24 +182,28 @@ TEST_CASE( "Test get lookahead point", "[lookahead_point]" )
 {
     SECTION( "Simple Test" )
     {
-        Path p = { { 0, 0, 0 }, { 5, 10, 10 }, { 20, 20, 10 } };
-        PurePursuitTest test_class( p, 5 );
-        auto dist = test_class.get_lookahead_point_test( { 6, 12, 10 } );
-        CHECK( dist == Approx( 13.416407864 ).margin( 1e-3 ) );
+        Path p = { { 0, 0, 0 }, { 10, 0, 10 } };
+        PurePursuitTest test_class( p, 3 );
+        auto point = test_class.get_lookahead_point_test( { 5, 5, 5 } );
+        CHECK( point == Point3D( 8, 0, 8 ) );
+
+        point = test_class.get_lookahead_point_test( { 3, 3, 3 } );
+        CHECK( point == Point3D( 6, 0, 6 ) );
     }
-    SECTION( "Point on segment parallel to the y-axis " )
+
+    SECTION( "Parallel to y axis" )
     {
-        Path p = { { 0, 0, 0 }, { 5, 10, 10 }, { 10, 5, 10 }, { 10, 25, 10 } };
-        PurePursuitTest test_class( p, 5 );
-        auto dist = test_class.get_lookahead_point_test( { 10, 10, 10 } );
-        CHECK( dist == Approx( 23.251407 ).margin( 1e-3 ) );
+        Path p = { { 1, 2, 0 }, { 3, 5, 10 }, { 3, 7, 13 }, { 4, 9, 15 } };
+        PurePursuitTest test_class( p, 3 );
+        auto point = test_class.get_lookahead_point_test( { 2, 6, 14 } );
+        CHECK( approximately_equals( Point3D( 3.894427, 8.78885, 14.788854 ), point ) );
     }
-    SECTION( "Complex Path" )
+
+    SECTION( "Edge Case" )
     {
-        Path p
-                = { { 1, 3, 0 }, { 4, 1, 10 }, { 4, 4, 10 }, { 5, 15, 10 }, { 3, 10, 10 } , {8, 20, 10} };
+        Path p = { { 0, 0, 0 }, { 10, 0, 10 } };
         PurePursuitTest test_class( p, 5 );
-        auto dist = test_class.get_lookahead_point_test( { 4.3, 13.25, 10 } );
-        CHECK( dist == Approx( 19.535712 ).margin( 1e-3 ) );
+        auto point = test_class.get_lookahead_point_test( { 11, 0, 12 } );
+        CHECK( point == p.at( 1 ) );
     }
 }

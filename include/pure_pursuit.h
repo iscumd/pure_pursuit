@@ -26,6 +26,8 @@ struct Point3D
     {
     }
     Point3D() {}
+
+    Point2D to2D() { return Point2D( x, y ); }
 };
 
 bool operator==( const Point3D& lhs, const Point3D& rhs )
@@ -34,8 +36,8 @@ bool operator==( const Point3D& lhs, const Point3D& rhs )
 }
 
 typedef std::vector<Point3D> Path;
-typedef std::pair<Point3D, Point3D> segment3D;
-typedef std::pair<Point2D, Point2D> segment2D;
+typedef std::pair<Point3D, Point3D> Segment3D;
+typedef std::pair<Point2D, Point2D> Segment2D;
 
 class PurePursuit
 {
@@ -84,9 +86,12 @@ protected:
     /**
     * @brief will get the robots location on a path segment where the first value is the
     * x,y coordinate of the
+    * path location. and the second value is a double that represents its distance to the
+    * path
+     *
      * Search for the shortest distance from the robot to each path segment
     */
-    Point2D get_location_on_path( const Point2D& state );
+    std::pair<Point2D, double> get_location_on_path( const Point2D& state );
 
     /**
      * @brief will find length of robot path
