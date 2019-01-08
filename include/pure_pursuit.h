@@ -1,5 +1,18 @@
+/**
+ * @file pure_pursuit.h
+ * @brief Path Tracking Program for a robot
+ * @author Aaron Cofield, JessRose Narsinghia, Andrew R. Davis
+ * @bug TO BE MARKED
+ */
+
+#ifndef PURE_PURSUIT_H
+#define PURE_PURSUIT_H
+
 #include <vector>
 
+/**
+ * @brief data structure to represent x and y coordinates for the robot
+ */
 struct Point2D
 {
     double x, y;
@@ -16,6 +29,9 @@ bool operator==( const Point2D& lhs, const Point2D& rhs )
     return ( lhs.x == rhs.x && lhs.y == rhs.y );
 }
 
+/**
+ * @brief: data structure to present x, y, and z (velocity) of the robot
+ */
 struct Point3D
 {
     double x, y, z;
@@ -45,38 +61,31 @@ public:
     PurePursuit( const Path& robot_path, const double& lookahead_distance );
 
     /**
-    * @brief Will return a target linear and angular velocity as a Point2D
-    * where x is the linear velocity and y is the angular velocity
-    *
-    * @input state a Point3D where x and y are the position of the bot and z is the
-    * orientation
-    *
-    * Implement waypoint following code here
+    * @brief
+    * @param state a Point3D where x and y are the position of the bot and z is the orientation
+    * @return a target linear and angular velocity as a Point2D where x is the linear velocity and y is the angula velocity.
     */
     Point2D get_target_state( const Point3D& state );
 
     /**
     * @brief will reset the path the robot must follow to a new robot path
+    * @param new path for the robot to follow as robot_path
     */
     void reset_path( const Path& robot_path );
 
     /**
     * @brief will reset lookahead distance
+     * @param the new lookahead distance
     */
     void reset_lookahead_distance( const double& lookahead_distance );
 
 protected:
     /**
     * @brief Will get the coordinates and target velocity of the lookahead point
+    * @param the current location of the robot
+     * @return Point3D variable for a point lookahead distance ahead of the state
     */
     Point3D get_lookahead_point( const Point3D& state );
-
-    /**
-    * @brief Will get the coordinates to the ongoing path segment where the first value
-    * is
-    * the point that has the smallest index in the path of the two values
-    */
-    std::pair<Point2D, Point2D> get_ongoing_path_segment( const int& current_segment );
 
     /**
     * @brief Will get point3D on path according to path location
@@ -112,3 +121,5 @@ protected:
     double m_lookahead_distance;
     Path m_robot_path;
 };
+
+#endif

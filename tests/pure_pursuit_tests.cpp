@@ -38,12 +38,6 @@ public:
         return get_lookahead_point( state );
     }
 
-    std::pair<Point2D, Point2D>
-    get_ongoing_path_segment_test( const int& current_segment )
-    {
-        return get_ongoing_path_segment( current_segment );
-    }
-
     Point3D get_point_on_path_test( const double& position )
     {
         return get_point_on_path( position );
@@ -99,9 +93,9 @@ TEST_CASE( "Test get point on path", "[point_path]" )
 {
     SECTION( "Simple Test" )
     {
-        Path p = { { 1, 2, 0 }, { 3, 5, 10 }, { 3, 7, 13 }, { 4, 9, 15 } };
+        Path p = { { 0, 0, 0 }, { 10, 0, 10 }, { 20, 0, 10 } };
         PurePursuitTest test_class( p, 5 );
-        auto point = test_class.get_point_on_path_test( 7.605551 );
+        auto point = test_class.get_point_on_path_test( 15 );
         CHECK( point == Point3D( 15, 0, 10 ) );
     }
 
