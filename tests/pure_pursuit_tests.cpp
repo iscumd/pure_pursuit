@@ -21,7 +21,7 @@ public:
     {
     }
 
-    Point2D get_target_state_test( const Point3D& state )
+    std::tuple<Point3D, double, double> get_target_state_test( const Point3D& state )
     {
         return get_target_state( state );
     }
@@ -55,6 +55,44 @@ public:
 
     double path_length_test() { return path_length(); }
 };
+
+TEST_CASE( "Test get target state", "[target_state]" )
+{
+    SECTION( "Simple Test" )
+    {
+        Path p = { { 0, 0, 0 }, { 10, 0, 10 } };
+        PurePursuitTest test_class( p, 3 );
+        auto values = test_class.get_target_state_test( { 5, 5, 5 } );
+        CHECK( std::get<0>(values) == Point3D( 8, 0, 8 ) );
+        //FIXME: CHECK(std::get<1>(values) == )
+        //FIXME: CHECK(std::get<2>(values)==)
+
+        values = test_class.get_target_state_test( { 3, 3, 3 } );
+        CHECK( std::get<0>(values) == Point3D( 6, 0, 6 ) );
+        //FIXME: CHECK(std::get<1>(values) == )
+        //FIXME: CHECK(std::get<2>(values)==)
+    }
+
+    SECTION( "Parallel to y axis" )
+    {
+        Path p = { { 1, 2, 0 }, { 3, 5, 10 }, { 3, 7, 13 }, { 4, 9, 15 } };
+        PurePursuitTest test_class( p, 3 );
+        auto values = test_class.get_target_state_test( { 2, 6, 14 } );
+        CHECK( approximately_equals( Point3D( 3.894427, 8.78885, 14.788854 ), std::get<0>(values) ) );
+        //FIXME: CHECK(std::get<1>(values) ==)
+        //FIXME: CHECK(std::get<2>(values)==)
+    }
+
+    SECTION( "Edge Case" )
+    {
+        Path p = { { 0, 0, 0 }, { 10, 0, 10 } };
+        PurePursuitTest test_class( p, 5 );
+        auto values = test_class.get_target_state_test( { 11, 0, 12 } );
+        CHECK( std::get<0>(values) == p.at( 1 ) );
+        //FIXME: CHECK(std::get<1>(values) ==)
+        //FIXME: CHECK(std::get<2>(values)==)
+    }
+}
 
 TEST_CASE( "Test get location on path", "[path_location]" )
 {

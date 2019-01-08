@@ -99,6 +99,12 @@ double distanceFormula(
                       + std::pow( ( point2.y - point1.y ), 2 ) );
 }
 
+double ang_diff(double th1, double th2) //angular error
+{
+    return fmod(((th1 - th2) + 3.0f * M_PI), (2.0f * M_PI)) - M_PI;
+}
+
+
 
 double PurePursuit::path_length()
 {
@@ -119,25 +125,18 @@ PurePursuit::PurePursuit( const Path& robot_path, const double& lookahead_distan
 {
 }
 
-/**
-        * @brief Will return a target linear and angular velocity as a Point2D
-        * where x is the linear velocity and y is the angular velocity
-        *
-        * @input state a Point3D where x and y are the position of the bot and z is the
- * orientation
-        *
-        * Should return Point3D value where x is target velocity and y is heading to
- * lookahead point
-        */
-Point2D PurePursuit::get_target_state( const Point3D& state ) {}
+std::tuple<Point3D, double, double> PurePursuit::get_target_state( const Point3D& state )
+{
+    Point3D lookaheadTarget = get_lookahead_point(state);
+    double headingTo = atan2(state.y, state.x); //heading to point
+    double headingErr = ang_diff(headingTo, state.z); //heading error
+    return std::make_tuple(lookaheadTarget, headingTo, headingErr);
+}
 
 void PurePursuit::reset_path( const Path& robot_path ) {}
 
 void PurePursuit::reset_lookahead_distance( const double& lookahead_distance ) {}
 
-/** *
-    * @brief Will get the coordinates and target velocity of the lookahead point
-  */
 Point3D PurePursuit::get_lookahead_point( const Point3D& state )
 {
     // use get_location on path with state and then use get distance from point, add five
