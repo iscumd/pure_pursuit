@@ -62,8 +62,10 @@ public:
 
     /**
     * @brief
-    * @param state a Point3D where x and y are the position of the bot and z is the orientation
-    * @return a target linear and angular velocity as a Point2D where x is the linear velocity and y is the angula velocity.
+    * @param state a Point3D where x and y are the position of the bot and z is the
+    * orientation
+    * @return a target linear and angular velocity as a Point2D where x is the linear
+    * velocity and y is the angula velocity.
     */
     Point2D get_target_state( const Point3D& state );
 
@@ -88,16 +90,19 @@ protected:
     Point3D get_lookahead_point( const Point3D& state );
 
     /**
-    * @brief Will get the point on the path that corresponds to the distance form beginning of path
+    * @brief Will get the point on the path that corresponds to the distance form
+    * beginning of path
      * @param position double value to represent point position
      * @return the point3D that is on the path
     */
     Point3D get_point_on_path( const double& position );
 
     /**
-    * @brief will get the robots location on a path segment relevant to the location of the robot
+    * @brief will get the robots location on a path segment relevant to the location of
+    * the robot
      * @param point of the robot (its current location_
-     * @return  first value is the x,y location coordinate of robot corresponding with the path. and the second value is a double distance between robot and the path
+     * @return  first value is the x,y location coordinate of robot corresponding with
+    * the path. and the second value is a double distance between robot and the path
     */
     std::pair<Point2D, double> get_location_on_path( const Point2D& state );
 
