@@ -140,15 +140,12 @@ void PurePursuit::reset_lookahead_distance( const double& lookahead_distance ) {
   */
 Point3D PurePursuit::get_lookahead_point( const Point3D& state )
 {
-
-
-    // USE THE LOOKAHEAD DISTANCE, FIND DISTANCE BEFORE THE CURRENT STATE THEN MOVE
-    // FORWORD ADDING DISTANCE
-}
-
-std::pair<Point2D, Point2D>
-PurePursuit::get_ongoing_path_segment( const int& current_segment )
-{
+    // use get_location on path with state and then use get distance from point, add five
+    // to the return and call get point
+    Point2D pointOnPath = get_location_on_path( { state.x, state.y } ).first;
+    double lookaheadPointDistance
+        = get_distance_to_point( pointOnPath ) + m_lookahead_distance;
+    return get_point_on_path( lookaheadPointDistance );
 }
 
 
@@ -309,7 +306,7 @@ double PurePursuit::get_distance_to_point(
     double yVal = 0;
     bool found  = false;
 
-    for ( int i = 0; i < ( m_robot_path.size() - 1 ); i++ )
+    for ( unsigned long i = 0; i < ( m_robot_path.size() - 1 ); i++ )
     {
         // find the equation for each segment. find where the point lies. then use the
         // distance formula
