@@ -8,8 +8,8 @@
 #ifndef PURE_PURSUIT_H
 #define PURE_PURSUIT_H
 
-#include <vector>
 #include <tuple>
+#include <vector>
 
 /**
  * @brief data structure to represent x and y coordinates for the robot
@@ -64,7 +64,8 @@ public:
     /**
     * @brief Find the targer state (point and velocity) of the robot
     * @param state a Point3D where x and y are the position of the bot and z is heading
-    * @return return Point3D that is lookahead point, first double is heading to, second double is the heading error
+    * @return return Point3D that is lookahead point, first double is heading to point,
+    * second double is the heading error
     */
     std::tuple<Point3D, double, double> get_target_state( const Point3D& state );
 

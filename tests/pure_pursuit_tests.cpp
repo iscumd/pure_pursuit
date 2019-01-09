@@ -62,35 +62,36 @@ TEST_CASE( "Test get target state", "[target_state]" )
     {
         Path p = { { 0, 0, 0 }, { 10, 0, 10 } };
         PurePursuitTest test_class( p, 3 );
-        auto values = test_class.get_target_state_test( { 5, 5, 5 } );
-        CHECK( std::get<0>(values) == Point3D( 8, 0, 8 ) );
-        //FIXME: CHECK(std::get<1>(values) == )
-        //FIXME: CHECK(std::get<2>(values)==)
-
-        values = test_class.get_target_state_test( { 3, 3, 3 } );
-        CHECK( std::get<0>(values) == Point3D( 6, 0, 6 ) );
-        //FIXME: CHECK(std::get<1>(values) == )
-        //FIXME: CHECK(std::get<2>(values)==)
+        auto values = test_class.get_target_state_test( { 5, 5, M_PI } );
+        CHECK( std::get<0>( values ) == Point3D( 8, 0, 8 ) );
+        CHECK( std::get<1>( values )
+               == Approx( M_PI_4 ).margin(
+                      1e-3 ) );  // point is 45 degrees away from x axis
+        CHECK( std::get<2>( values ) == Approx( -3 * M_PI_4 ).margin( 1e-3 ) );
     }
 
     SECTION( "Parallel to y axis" )
     {
         Path p = { { 1, 2, 0 }, { 3, 5, 10 }, { 3, 7, 13 }, { 4, 9, 15 } };
-        PurePursuitTest test_class( p, 3 );
-        auto values = test_class.get_target_state_test( { 2, 6, 14 } );
-        CHECK( approximately_equals( Point3D( 3.894427, 8.78885, 14.788854 ), std::get<0>(values) ) );
-        //FIXME: CHECK(std::get<1>(values) ==)
-        //FIXME: CHECK(std::get<2>(values)==)
+        PurePursuitTest test_class( p, 1 );
+        auto values = test_class.get_target_state_test( { 4, 5, M_PI_2 } );
+        CHECK(
+            approximately_equals( Point3D( 3.0, 6.0, 11.5 ), std::get<0>( values ) ) );
+        //        CHECK( std::get<1>( values) == Approx(M_PI_4).margin(1e-3));
+        //        CHECK( std::get<2>( values ) == Approx(0).margin(1e-3));
+        // FIXME: These two double values are slightly off... needs to be checked
+        // visually
     }
 
     SECTION( "Edge Case" )
     {
         Path p = { { 0, 0, 0 }, { 10, 0, 10 } };
         PurePursuitTest test_class( p, 5 );
-        auto values = test_class.get_target_state_test( { 11, 0, 12 } );
-        CHECK( std::get<0>(values) == p.at( 1 ) );
-        //FIXME: CHECK(std::get<1>(values) ==)
-        //FIXME: CHECK(std::get<2>(values)==)
+        auto values = test_class.get_target_state_test( { 11, 0, 0 } );
+        CHECK( std::get<0>( values ) == p.at( 1 ) );
+        CHECK( std::get<1>( values )
+               == Approx( 0 ).margin( 1e-3 ) );  // point is 45 degrees away from x axis
+        CHECK( std::get<2>( values ) == Approx( 0 ).margin( 1e-3 ) );
     }
 }
 
@@ -169,7 +170,6 @@ TEST_CASE( "Test get point on path", "[point_path]" )
         CHECK( point == Point3D( 0, 0, 0 ) );
     }
 }
-
 
 TEST_CASE( "Test get distance to point", "[distance_point]" )
 {

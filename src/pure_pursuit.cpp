@@ -99,12 +99,10 @@ double distanceFormula(
                       + std::pow( ( point2.y - point1.y ), 2 ) );
 }
 
-double ang_diff(double th1, double th2) //angular error
+double ang_diff( double th1, double th2 )  // angular error
 {
-    return fmod(((th1 - th2) + 3.0f * M_PI), (2.0f * M_PI)) - M_PI;
+    return fmod( ( ( th1 - th2 ) + 3.0f * M_PI ), ( 2.0f * M_PI ) ) - M_PI;
 }
-
-
 
 double PurePursuit::path_length()
 {
@@ -127,10 +125,10 @@ PurePursuit::PurePursuit( const Path& robot_path, const double& lookahead_distan
 
 std::tuple<Point3D, double, double> PurePursuit::get_target_state( const Point3D& state )
 {
-    Point3D lookaheadTarget = get_lookahead_point(state);
-    double headingTo = atan2(state.y, state.x); //heading to point
-    double headingErr = ang_diff(headingTo, state.z); //heading error
-    return std::make_tuple(lookaheadTarget, headingTo, headingErr);
+    Point3D lookaheadTarget = get_lookahead_point( state );
+    double headingTo        = atan2( state.y, state.x );       // heading to point
+    double headingErr       = ang_diff( headingTo, state.z );  // heading error
+    return std::make_tuple( lookaheadTarget, headingTo, headingErr );
 }
 
 void PurePursuit::reset_path( const Path& robot_path ) {}
@@ -146,7 +144,6 @@ Point3D PurePursuit::get_lookahead_point( const Point3D& state )
         = get_distance_to_point( pointOnPath ) + m_lookahead_distance;
     return get_point_on_path( lookaheadPointDistance );
 }
-
 
 Point3D PurePursuit::get_point_on_path( const double& position )
 {
@@ -264,7 +261,6 @@ Point3D PurePursuit::get_point_on_path( const double& position )
     return newPoint;
 }
 
-
 std::pair<Point2D, double> PurePursuit::get_location_on_path( const Point2D& state )
 {
     double shortest_dist = std::numeric_limits<double>::max();
@@ -296,7 +292,6 @@ std::pair<Point2D, double> PurePursuit::get_location_on_path( const Point2D& sta
         throw std::runtime_error( "Unable to find shortest distance" );
     }
 }
-
 
 double PurePursuit::get_distance_to_point(
     const Point2D& currPoint )  // assumption: the point 3D exists on the path
