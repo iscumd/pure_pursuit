@@ -8,6 +8,7 @@
 #ifndef PURE_PURSUIT_H
 #define PURE_PURSUIT_H
 
+#include <tuple>
 #include <vector>
 
 /**
@@ -61,13 +62,12 @@ public:
     PurePursuit( const Path& robot_path, const double& lookahead_distance );
 
     /**
-    * @brief
-    * @param state a Point3D where x and y are the position of the bot and z is the
-    * orientation
-    * @return a target linear and angular velocity as a Point2D where x is the linear
-    * velocity and y is the angula velocity.
+    * @brief Find the targer state (point and velocity) of the robot
+    * @param state a Point3D where x and y are the position of the bot and z is heading
+    * @return return Point3D that is lookahead point, first double is heading to point,
+    * second double is the heading error
     */
-    Point2D get_target_state( const Point3D& state );
+    std::tuple<Point3D, double, double> get_target_state( const Point3D& state );
 
     /**
     * @brief will reset the path the robot must follow to a new robot path
