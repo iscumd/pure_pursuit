@@ -1,6 +1,7 @@
 // implement class here
 #include "pure_pursuit.h"
 #include <cmath>
+#include <iostream>
 #include <limits>
 #include <stdexcept>
 
@@ -104,6 +105,19 @@ double ang_diff( double th1, double th2 )  // angular error
     return fmod( ( ( th1 - th2 ) + 3.0f * M_PI ), ( 2.0f * M_PI ) ) - M_PI;
 }
 
+bool approximately_equals( Point3D expected, Point3D actual )
+{
+    return ( std::fabs( actual.x - expected.x ) < EPSILON )
+        && ( std::fabs( actual.y - expected.y ) < EPSILON )
+        && ( std::fabs( actual.z - expected.z ) < EPSILON );
+}
+
+bool approximately_equals( Point2D expected, Point2D actual )
+{
+    return ( std::fabs( actual.x - expected.x ) < EPSILON )
+        && ( std::fabs( actual.y - expected.y ) < EPSILON );
+}
+
 double PurePursuit::path_length()
 {
     double totalLength = 0;
@@ -126,23 +140,29 @@ PurePursuit::PurePursuit( const Path& robot_path, const double& lookahead_distan
 std::tuple<Point3D, double, double> PurePursuit::get_target_state( const Point3D& state )
 {
     Point3D lookaheadTarget = get_lookahead_point( state );
-    double headingTo        = atan2( state.y, state.x );       // heading to point
-    double headingErr       = ang_diff( headingTo, state.z );  // heading error
+    double headingTo        = atan2( lookaheadTarget.y - state.y,
+                              lookaheadTarget.x - state.x );  // heading to point
+    double headingErr = ang_diff( headingTo, state.z );       // heading error
     return std::make_tuple( lookaheadTarget, headingTo, headingErr );
 }
 
-void PurePursuit::reset_path( const Path& robot_path ) {}
+void PurePursuit::reset_path( const Path& robot_path ) { m_robot_path = robot_path; }
 
-void PurePursuit::reset_lookahead_distance( const double& lookahead_distance ) {}
+void PurePursuit::reset_lookahead_distance( const double& lookahead_distance )
+{
+    m_lookahead_distance = lookahead_distance;
+}
 
 Point3D PurePursuit::get_lookahead_point( const Point3D& state )
 {
     // use get_location on path with state and then use get distance from point, add five
     // to the return and call get point
-    Point2D pointOnPath = get_location_on_path( { state.x, state.y } ).first;
-    double lookaheadPointDistance
-        = get_distance_to_point( pointOnPath ) + m_lookahead_distance;
-    return get_point_on_path( lookaheadPointDistance );
+    Point2D pointOnPath           = get_location_on_path( { state.x, state.y } ).first;
+    double dist_to_point          = get_distance_to_point( pointOnPath );
+    double lookaheadPointDistance = dist_to_point + m_lookahead_distance;
+    auto ret                      = get_point_on_path( lookaheadPointDistance );
+    std::cout << get_distance_to_point( pointOnPath ) << std::endl;
+    return ret;
 }
 
 Point3D PurePursuit::get_point_on_path( const double& position )
@@ -154,7 +174,7 @@ Point3D PurePursuit::get_point_on_path( const double& position )
     // blank position points from the beginning of the vector
     double numerator, denominator;
     double sum = 0;  // must be initialized to the first path point bc for loop adds on
-                     // the following point
+    // the following point
     double distance, slope = 0;
     double zVal = 0, yVal = 0, xVal = 0;
     unsigned long vectSize = m_robot_path.size();
@@ -166,19 +186,19 @@ Point3D PurePursuit::get_point_on_path( const double& position )
         {  // loop until second to last point in path
             numerator = m_robot_path.at( i + 1 ).y
                 - m_robot_path.at( i ).y;  // i + 1 looks ahead to next point in path in
-                                           // order to act as point 2 in the slope
-                                           // formula
+            // order to act as point 2 in the slope
+            // formula
             denominator = m_robot_path.at( i + 1 ).x
                 - m_robot_path.at( i )
                       .x;  // denominator subtracts x values of two points
 
             if ( denominator != 0 )  // this means that line is not parallel to the y
-                                     // axis
+            // axis
             {
                 sum += distanceFormula( m_robot_path.at( i ),
                                         m_robot_path.at( i + 1 ) );  // distance formula
                 if ( sum >= position )  // if the distance is greater than that means the
-                                        // position is between i and i+1
+                // position is between i and i+1
                 {
                     distance = sum - distanceFormula( m_robot_path.at( i ),
                                                       m_robot_path.at( i + 1 ) );
@@ -216,7 +236,7 @@ Point3D PurePursuit::get_point_on_path( const double& position )
             {
                 sum += distanceFormula( m_robot_path.at( i ), m_robot_path.at( i + 1 ) );
                 if ( sum >= position )  // if the distance is greater than that means the
-                                        // position is between i and i+1
+                // position is between i and i+1
                 {
                     distance = sum - distanceFormula( m_robot_path.at( i ),
                                                       m_robot_path.at( i + 1 ) );
@@ -293,97 +313,62 @@ std::pair<Point2D, double> PurePursuit::get_location_on_path( const Point2D& sta
     }
 }
 
+bool is_between( const Point2D& a, const Point2D& c, const Point2D& b )
+{
+    double crossproduct = ( c.y - a.y ) * ( b.x - a.x ) - ( c.x - a.x ) * ( b.y - a.y );
+
+    // compare versus epsilon for floating point values, or != 0 if using integers
+    if ( std::fabs( crossproduct ) > EPSILON )
+    {
+        return false;
+    }
+
+    double dotproduct = ( c.x - a.x ) * ( b.x - a.x ) + ( c.y - a.y ) * ( b.y - a.y );
+    if ( dotproduct < 0 )
+    {
+        return false;
+    }
+
+    double squaredlengthba
+        = ( b.x - a.x ) * ( b.x - a.x ) + ( b.y - a.y ) * ( b.y - a.y );
+    if ( dotproduct > squaredlengthba )
+    {
+        return false;
+    }
+
+    return true;
+}
+
 double PurePursuit::get_distance_to_point(
     const Point2D& currPoint )  // assumption: the point 3D exists on the path
 {
-    double sum = 0, numerator = 0, denominator = 0, slope = 0;
-    double yVal = 0;
-    bool found  = false;
+    double sum = 0;
 
-    for ( unsigned long i = 0; i < ( m_robot_path.size() - 1 ); i++ )
+    if ( approximately_equals( currPoint, m_robot_path.back().to2D() ) )
     {
-        // find the equation for each segment. find where the point lies. then use the
-        // distance formula
-        numerator = m_robot_path.at( i + 1 ).y
-            - m_robot_path.at( i ).y;  // i + 1 looks ahead to next point in path in
-        // order to act as point 2 in the slope
-        // formula
-        denominator = m_robot_path.at( i + 1 ).x
-            - m_robot_path.at( i ).x;  // denominator subtracts x values of two points
-        if ( denominator != 0 )
+        return path_length();
+    }
+    else if ( approximately_equals( currPoint, m_robot_path.front().to2D() ) )
+    {
+        return 0;
+    }
+    for ( unsigned long i = 0; i < m_robot_path.size() - 1; ++i )
+    {
+        bool b = is_between( m_robot_path.at( i ).to2D(), currPoint,
+                             m_robot_path.at( i + 1 ).to2D() );
+        if ( !b )
         {
-
-            sum += distanceFormula( m_robot_path.at( i ),
-                                    m_robot_path.at( i + 1 ) );  // distance formula
-            slope = numerator / denominator;
-
-            yVal = ( slope * currPoint.x )
-                - ( slope
-                    * m_robot_path.at( i ).x )  // finds the equation of the line segment
-                + m_robot_path.at( i ).y;
-            if ( yVal == currPoint.y )  // means parameter lies on this line segment
-            {
-
-                sum -= distanceFormula(
-                    m_robot_path.at( i ),
-                    m_robot_path.at(
-                        i + 1 ) );  // subtract the length of whole line segment
-                sum += distanceFormula( m_robot_path.at( i ),
-                                        currPoint );  // adds the distance from point i
-                                                      // to the parameter point
-                found = true;
-                break;
-            }
+            sum += distanceFormula( m_robot_path.at( i ), m_robot_path.at( i + 1 ) );
         }
         else
         {
-            sum += distanceFormula( m_robot_path.at( i ), m_robot_path.at( i + 1 ) );
-            if ( currPoint.x == m_robot_path.at( i ).x )  // Means that x values are same
-                                                          // and currPoint could be on
-                                                          // segment
-            {
-                if ( m_robot_path.at( i ).y <= m_robot_path.at( i + 1 ).y )
-                {
-                    if ( ( currPoint.y >= m_robot_path.at( i ).y )
-                         && ( currPoint.y
-                              <= m_robot_path.at( i + 1 )
-                                     .y ) )  // means that currPoint is on segment
-                    {
-                        sum -= distanceFormula(
-                            m_robot_path.at( i ),
-                            m_robot_path.at( i + 1 ) );  // subtract whole line segment
-                        sum += distanceFormula(
-                            m_robot_path.at( i ),
-                            currPoint );  // adds length from point i to the parameter
-                        found = true;
-                        break;
-                    }
-                }
-                else
-                {
-                    if ( ( currPoint.y <= m_robot_path.at( i ).y )
-                         && ( currPoint.y
-                              >= m_robot_path.at( i + 1 )
-                                     .y ) )  // means that currPoint is on this path
-                    {
-                        sum -= distanceFormula(
-                            m_robot_path.at( i ),
-                            m_robot_path.at( i + 1 ) );  // subtract whole line segment
-                        sum += distanceFormula(
-                            m_robot_path.at( i ),
-                            currPoint );  // adds length from point i to the parameter
-                        found = true;
-                        break;
-                    }
-                }
-            }
+            sum += distanceFormula( m_robot_path.at( i ).to2D(), currPoint );
+            break;
         }
     }
-
-    if ( !found )
+    if ( std::fabs( path_length() - sum ) < EPSILON )
     {
-        sum = -1;
+        return -1;
     }
-
     return sum;
 }

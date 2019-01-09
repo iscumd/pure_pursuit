@@ -11,6 +11,8 @@
 #include <tuple>
 #include <vector>
 
+#define EPSILON 1e-3
+
 /**
  * @brief data structure to represent x and y coordinates for the robot
  */
