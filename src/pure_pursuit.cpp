@@ -161,10 +161,11 @@ Point3D PurePursuit::get_lookahead_point( const Point3D& state )
     //Point2D pointOnPath           = get_location_on_path( { state.x, state.y } ).first;
     Point2D pointOnPath = get_current_segment_location_on_path( { state.x, state.y } ).first;
     double dist_to_point          = get_distance_to_point( pointOnPath );
-    if(m_current_segment < m_robot_path.size() && dist_to_point > distanceFormula(m_robot_path.at(m_current_segment),m_robot_path.at(m_current_segment + 1))){
+    double lookaheadPointDistance = dist_to_point + m_lookahead_distance;
+    if(m_current_segment < m_robot_path.size() && lookaheadPointDistance > distanceFormula(m_robot_path.at(m_current_segment),m_robot_path.at(m_current_segment + 1))){
         m_current_segment++;
     }
-    double lookaheadPointDistance = dist_to_point + m_lookahead_distance;
+
     auto ret                      = get_point_on_path( lookaheadPointDistance );
 //    std::cout << get_distance_to_point( pointOnPath ) << std::endl;
     return ret;
