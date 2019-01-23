@@ -134,6 +134,7 @@ double PurePursuit::path_length()
 PurePursuit::PurePursuit( const Path& robot_path, const double& lookahead_distance )
     : m_robot_path( robot_path )
     , m_lookahead_distance( lookahead_distance )
+    , m_current_segment (0)
 {
 }
 
@@ -157,11 +158,15 @@ Point3D PurePursuit::get_lookahead_point( const Point3D& state )
 {
     // use get_location on path with state and then use get distance from point, add five
     // to the return and call get point
-    Point2D pointOnPath           = get_location_on_path( { state.x, state.y } ).first;
+    //Point2D pointOnPath           = get_location_on_path( { state.x, state.y } ).first;
+    Point2D pointOnPath = get_current_segment_location_on_path( { state.x, state.y } ).first;
     double dist_to_point          = get_distance_to_point( pointOnPath );
+    if(m_current_segment < m_robot_path.size() && dist_to_point > distanceFormula(m_robot_path.at(m_current_segment),m_robot_path.at(m_current_segment + 1))){
+        m_current_segment++;
+    }
     double lookaheadPointDistance = dist_to_point + m_lookahead_distance;
     auto ret                      = get_point_on_path( lookaheadPointDistance );
-    std::cout << get_distance_to_point( pointOnPath ) << std::endl;
+//    std::cout << get_distance_to_point( pointOnPath ) << std::endl;
     return ret;
 }
 
@@ -279,6 +284,18 @@ Point3D PurePursuit::get_point_on_path( const double& position )
     newPoint.z = zVal;
 
     return newPoint;
+}
+
+std::pair<Point2D, double> PurePursuit::get_current_segment_location_on_path( const Point2D& state )
+{
+    if(m_current_segment < m_robot_path.size()) {
+        Segment2D curr_seg(m_robot_path.at(m_current_segment).to2D(), m_robot_path.at(m_current_segment + 1).to2D());
+        return project_to_line_segment(state, curr_seg);
+    }
+    else
+    {
+        return std::make_pair<Point2D,double>(m_robot_path.back().to2D(), distanceFormula(state,m_robot_path.back().to2D()));
+    }
 }
 
 std::pair<Point2D, double> PurePursuit::get_location_on_path( const Point2D& state )

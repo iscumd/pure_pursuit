@@ -121,8 +121,11 @@ protected:
      */
     double get_distance_to_point( const Point2D& currPoint );
 
+    std::pair<Point2D, double> get_current_segment_location_on_path( const Point2D& state );
+
     double m_lookahead_distance;
     Path m_robot_path;
+    ulong m_current_segment;
 };
 
 #endif
